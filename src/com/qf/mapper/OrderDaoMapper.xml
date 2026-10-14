@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.OrderDao">
+
+    <!-- 创建新订单 -->
+    <insert id="insertOrder" parameterType="com.qf.pojo.Order" useGeneratedKeys="true" keyProperty="orderId">
+        insert into orders (username, totalprice, ordertime, status)
+        values (#{userName}, #{totalPrice}, #{orderTime}, #{status})
+    </insert>
+
+    <!-- 批量插入订单商品明细（保存下单快照） -->
+    <insert id="insertOrderItems">
+        insert into order_items (orderid, pid, pname, pimage, price, quantity)
+        values
+        <foreach collection="items" item="item" separator=",">
+            (#{orderId}, #{item.pid}, #{item.pname}, #{item.pimage}, #{item.price}, #{item.quantity})
+        </foreach>
+    </insert>
+
+    <!-- 根据订单ID查询订单 -->
+    <select id="selectByOrderId" parameterType="Integer" resultType="com.qf.pojo.Order">
+        select orderid as orderId, username as userName, totalprice as totalPrice, ordertime as orderTime, status
+        from orders
+        where orderid = #{orderId}
+    </select>
+
+    <!-- 根据订单ID查询商品明细 -->
+    <select id="selectItemsByOrderId" parameterType="Integer" resultType="com.qf.pojo.CartItem">
+        select pid, pname, pimage, price, quantity
+        from order_items
+        where orderid = #{orderId}
+        order by id asc
+    </select>
+
+    <!-- 根据用户名查询订单列表 -->
+    <select id="selectByUserName" parameterType="String" resultType="com.qf.pojo.Order">
+        select orderid as orderId, username as userName, totalprice as totalPrice, ordertime as orderTime, status
+        from orders
+        where username = #{userName}
+        order by ordertime desc
+    </select>
+
+    <!-- 根据用户名分页查询订单列表 -->
+    <select id="selectByUserNameWithPagination" resultType="com.qf.pojo.Order">
+        select orderid as orderId, username as userName, totalprice as totalPrice, ordertime as orderTime, status
+        from orders
+        where username = #{userName}
+        order by ordertime desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <!-- 根据用户名查询订单总数 -->
+    <select id="countByUserName" parameterType="String" resultType="Integer">
+        select count(*) from orders
+        where username = #{userName}
+    </select>
+
+    <!-- 查询所有订单 -->
+    <select id="selectAllOrders" resultType="com.qf.pojo.Order">
+        select orderid as orderId, username as userName, totalprice as totalPrice, ordertime as orderTime, status
+        from orders
+        order by ordertime desc
+    </select>
+
+    <!-- 更新订单状态 -->
+    <update id="updateOrderStatus">
+        update orders
+        set status = #{status}
+        where orderid = #{orderId}
+    </update>
+
+    <!-- 删除订单 -->
+    <delete id="deleteOrder" parameterType="Integer">
+        delete from orders where orderid = #{orderId}
+    </delete>
+
+    <!-- 删除订单明细 -->
+    <delete id="deleteOrderItemsByOrderId" parameterType="Integer">
+        delete from order_items where orderid = #{orderId}
+    </delete>
+
+    <!-- 分页查询订单 -->
+    <select id="selectOrdersWithPagination" resultType="com.qf.pojo.Order">
+        select orderid as orderId, username as userName, totalprice as totalPrice, ordertime as orderTime, status
+        from orders
+        order by ordertime desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <!-- 按状态分页查询订单 -->
+    <select id="selectOrdersByStatusWithPagination" resultType="com.qf.pojo.Order">
+        select orderid as orderId, username as userName, totalprice as totalPrice, ordertime as orderTime, status
+        from orders
+        where status = #{status}
+        order by ordertime desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <!-- 查询订单总数 -->
+    <select id="countAllOrders" resultType="Integer">
+        select count(*) from orders
+    </select>
+
+    <!-- 按状态查询订单总数 -->
+    <select id="countOrdersByStatus" resultType="Integer">
+        select count(*) from orders where status = #{status}
+    </select>
+
+    <!-- 统计今日订单数 -->
+    <select id="countTodayOrders" resultType="Integer">
+        select count(*) from orders
+        where DATE(ordertime) = CURDATE()
+    </select>
+
+    <!-- 统计今日销售额 -->
+    <select id="sumTodaySales" resultType="Double">
+        select IFNULL(SUM(totalprice), 0) from orders
+        where DATE(ordertime) = CURDATE()
+    </select>
+
+    <!-- 统计总销售额 -->
+    <select id="sumTotalSales" resultType="Double">
+        select IFNULL(SUM(totalprice), 0) from orders
+    </select>
+</mapper>

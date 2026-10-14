@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.dao.ProductDao">
+
+    <!-- 查询所有商品 -->
+    <select id="selectAll" resultType="com.qf.pojo.Product">
+        select * from product
+    </select>
+
+    <!-- 根据分类查询商品 -->
+    <select id="selectByCategory" parameterType="Integer" resultType="com.qf.pojo.Product">
+        select * from product where category = #{category}
+    </select>
+    <!-- 根据商品ID查询商品 -->
+    <select id="selectByPid" parameterType="Integer" resultType="com.qf.pojo.Product">
+        select * from product where pid = #{pid}
+    </select>
+
+    <!-- 根据关键词搜索商品 -->
+    <select id="selectByKeyword" parameterType="String" resultType="com.qf.pojo.Product">
+        select * from product where pname like concat('%', #{keyword}, '%') or pdesc like concat('%', #{keyword}, '%')
+    </select>
+
+    <!-- 查询所有不同的分类 -->
+    <select id="selectAllCategories" resultType="Integer">
+        select distinct category from product order by category
+    </select>
+
+    <!-- 分页查询所有商品 -->
+    <select id="selectAllWithPagination" resultType="com.qf.pojo.Product">
+        select * from product limit #{offset}, #{limit}
+    </select>
+
+    <!-- 分页查询指定分类的商品 -->
+    <select id="selectByCategoryWithPagination" resultType="com.qf.pojo.Product">
+        select * from product where category = #{category} limit #{offset}, #{limit}
+    </select>
+
+    <!-- 查询商品总数 -->
+    <select id="countAll" resultType="Integer">
+        select count(*) from product
+    </select>
+
+    <!-- 查询指定分类的商品总数 -->
+    <select id="countByCategory" parameterType="Integer" resultType="Integer">
+        select count(*) from product where category = #{category}
+    </select>
+
+    <!-- 添加商品 -->
+    <insert id="insertProduct" parameterType="com.qf.pojo.Product" useGeneratedKeys="true" keyProperty="pid">
+        insert into product (pname, pdesc, price, pimage, category)
+        values (#{pname}, #{pdesc}, #{price}, #{pimage}, #{category})
+    </insert>
+
+    <!-- 更新商品 -->
+    <update id="updateProduct" parameterType="com.qf.pojo.Product">
+        update product
+        set pname = #{pname},
+            pdesc = #{pdesc},
+            price = #{price},
+            pimage = #{pimage},
+            category = #{category}
+        where pid = #{pid}
+    </update>
+    <!-- 删除商品 -->
+    <delete id="deleteProduct" parameterType="Integer">
+        delete from product where pid = #{pid}
+    </delete>
+</mapper>

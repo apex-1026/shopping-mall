@@ -1,0 +1,20 @@
+# 支付通用配置
+payment.mode=mock
+payment.notify.baseUrl=http://localhost:8080/Mybatis04
+
+# 支付宝沙箱配置（示例）
+alipay.appId=2021000000000000
+alipay.privateKey=YOUR_ALIPAY_APP_PRIVATE_KEY
+alipay.publicKey=YOUR_ALIPAY_ALIPAY_PUBLIC_KEY
+alipay.gateway=https://openapi-sandbox.dl.alipaydev.com/gateway.do
+alipay.notifyPath=/payment/notify/alipay
+alipay.returnPath=/payment/return
+
+# 微信支付沙箱/测试配置（示例）
+wechat.appId=wx1234567890abcdef
+wechat.mchId=1900000001
+wechat.apiV3Key=YOUR_WECHAT_API_V3_KEY
+wechat.privateKeyPath=C:/keys/wechat/apiclient_key.pem
+wechat.serialNo=YOUR_WECHAT_SERIAL_NO
+wechat.unifiedOrderUrl=https://api.mch.weixin.qq.com/v3/pay/transactions/native
+wechat.notifyPath=/payment/notify/wechat
